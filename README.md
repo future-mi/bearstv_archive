@@ -2,7 +2,7 @@
 
 두산 베어스 공식 유튜브 채널 [BEARS TV](https://www.youtube.com/@bearstv1982) 개인 큐레이션 아카이브.
 
-**🔗 사이트 보기:** https://YOUR_USERNAME.github.io/bearstv_archive/
+**🔗 사이트 보기:** https://future-mi.github.io/bearstv_archive
 
 ## 구성
 
