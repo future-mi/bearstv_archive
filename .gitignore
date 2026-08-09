@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 시크릿 (노션 토큰 있는 스크립트는 로컬에만)
+bearstv_notion.py
+*.env
+
+# OS
+.DS_Store
+Thumbs.db
