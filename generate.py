@@ -161,6 +161,226 @@ paste_content = f'''
 </table>
 '''
 
+# ===== 검색바 + 맨 위로 버튼 (index.html 전용, 더쿠용에는 넣지 않음) =====
+# f-string 밖에 따로 둬서 CSS/JS 중괄호를 이스케이프할 필요 없음
+ENHANCE_HTML = r'''
+<!-- ===== BEARS TV 아카이브: 검색 + 맨 위로 버튼 (GitHub Pages 전용, 더쿠용 HTML에는 넣지 말 것) ===== -->
+<style>
+  .bt-head { width:100%; max-width:860px; margin:0 auto; border-collapse:collapse; background:#F4EFE1; }
+  .bt-search {
+    position: sticky; top: 0; z-index: 20;
+    max-width: 860px; margin: 0 auto; box-sizing: border-box;
+    padding: 12px 20px; background: rgba(244,239,225,0.96);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    border-bottom: 1px solid #D9CFB7;
+  }
+  .bt-search-row { display:flex; align-items:center; gap:10px; }
+  .bt-field { position:relative; flex:1; min-width:0; }
+  .bt-field svg { position:absolute; left:14px; top:50%; transform:translateY(-50%); width:15px; height:15px; color:#8A7A55; pointer-events:none; }
+  .bt-input {
+    width:100%; box-sizing:border-box; height:40px; padding:0 38px 0 38px;
+    border:1px solid #B89B5E; border-radius:999px; background:#FBF8F0;
+    font: 14px 'Pretendard Variable', Pretendard, -apple-system, sans-serif; color:#1A1512;
+    outline:none; -webkit-appearance:none; appearance:none;
+  }
+  .bt-input::placeholder { color:#9A9283; }
+  .bt-input:focus { border-color:#0A1330; box-shadow:0 0 0 3px rgba(10,19,48,0.08); }
+  .bt-input::-webkit-search-cancel-button { display:none; }
+  .bt-clear {
+    position:absolute; right:8px; top:50%; transform:translateY(-50%);
+    width:26px; height:26px; border:0; border-radius:50%; background:transparent;
+    color:#5C5651; font-size:16px; line-height:26px; cursor:pointer; display:none;
+  }
+  .bt-clear:hover { background:#EAE0C9; }
+  .bt-count {
+    flex:none; font-family:'IBM Plex Mono', Consolas, monospace; font-size:11px;
+    letter-spacing:0.12em; color:#5C5651; white-space:nowrap;
+  }
+  .bt-count b { color:#0A1330; }
+  .bt-empty {
+    max-width:860px; margin:0 auto; box-sizing:border-box; padding:56px 20px; text-align:center;
+    background:#F4EFE1; font-family:'Gowun Batang', serif; font-size:15px; color:#5C5651; display:none;
+  }
+  .bt-grid {
+    display:grid; grid-template-columns:1fr 1fr; column-gap:24px; row-gap:32px;
+    padding:16px 16px 16px;
+  }
+  .bt-grid > div { min-width:0; }
+  .bt-hide { display:none !important; }
+  .bt-chip-off { opacity:0.35; }
+  [id^="user_content_"] { scroll-margin-top: 72px; }
+
+  .bt-top {
+    position:fixed; right:20px; bottom:24px; z-index:30;
+    width:46px; height:46px; border-radius:50%;
+    border:1px solid #B89B5E; background:#0A1330; color:#F4EFE1;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    box-shadow:0 6px 18px rgba(10,19,48,0.25);
+    opacity:0; visibility:hidden; transform:translateY(8px);
+    transition:opacity .2s ease, transform .2s ease, visibility .2s;
+  }
+  .bt-top.show { opacity:1; visibility:visible; transform:none; }
+  .bt-top:hover { background:#C8102E; border-color:#C8102E; }
+  .bt-top svg { width:18px; height:18px; }
+
+  @media (max-width:640px) {
+    .bt-search { padding:10px 12px; }
+    .bt-grid { column-gap:14px; row-gap:24px; padding:12px 8px 12px; }
+    .bt-top { right:14px; bottom:18px; width:42px; height:42px; }
+  }
+</style>
+
+<button type="button" class="bt-top" aria-label="맨 위로" title="맨 위로">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script>
+(function () {
+  var archive = document.getElementById('archive');
+  if (!archive) return;
+  var table = archive.querySelector('table');
+  if (!table) return;
+  var rows = Array.prototype.slice.call(table.rows);
+
+  // 1) 히어로 + 칩 줄을 별도 테이블로 빼고, 그 아래에 sticky 검색바 삽입
+  var head = document.createElement('table');
+  head.className = 'bt-head';
+  head.setAttribute('cellpadding', '0'); head.setAttribute('cellspacing', '0'); head.setAttribute('border', '0');
+  var headBody = document.createElement('tbody');
+  head.appendChild(headBody);
+  headBody.appendChild(rows[0]);
+  headBody.appendChild(rows[1]);
+  archive.insertBefore(head, table);
+
+  var bar = document.createElement('div');
+  bar.className = 'bt-search';
+  bar.innerHTML =
+    '<div class="bt-search-row">' +
+      '<div class="bt-field">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
+        '<input class="bt-input" type="search" enterkeyhint="search" autocomplete="off" placeholder="선수 · 제목 · 날짜 검색" aria-label="영상 검색">' +
+        '<button type="button" class="bt-clear" aria-label="검색어 지우기">×</button>' +
+      '</div>' +
+      '<div class="bt-count"></div>' +
+    '</div>';
+  archive.insertBefore(bar, table);
+
+  var empty = document.createElement('div');
+  empty.className = 'bt-empty';
+  empty.textContent = '검색 결과가 없어요';
+  archive.insertBefore(empty, table.nextSibling);
+
+  var input = bar.querySelector('.bt-input');
+  var clearBtn = bar.querySelector('.bt-clear');
+  var countEl = bar.querySelector('.bt-count');
+
+  // 2) 섹션별 카드 테이블들을 하나의 그리드로 변환 (빈칸 없이 필터링하기 위해)
+  var sections = [];
+  var items = [];
+  var chips = {};
+  Array.prototype.forEach.call(head.querySelectorAll('a[href^="#user_content_"]'), function (a) {
+    chips[a.getAttribute('href').slice(1)] = a;
+  });
+
+  Array.prototype.forEach.call(table.querySelectorAll('a[id^="user_content_"]'), function (hdr) {
+    var hdrRow = hdr.closest('tr');
+    var bodyRow = hdrRow && hdrRow.nextElementSibling;
+    if (!bodyRow) return;
+    var cell = bodyRow.cells[0];
+    var cards = Array.prototype.slice.call(cell.querySelectorAll('a[target="_blank"]'));
+    var grid = document.createElement('div');
+    grid.className = 'bt-grid';
+    var catName = hdr.textContent.split('/')[0].replace(/\s+/g, ' ').trim();
+    var countB = hdr.querySelector('b');
+    var sec = { id: hdr.id, hdrRow: hdrRow, bodyRow: bodyRow, countB: countB,
+                total: countB ? countB.textContent : '', items: [] };
+    cards.forEach(function (a) {
+      var wrap = document.createElement('div');
+      wrap.appendChild(a);
+      grid.appendChild(wrap);
+      var img = a.querySelector('img');
+      var text = (catName + ' ' + a.textContent + ' ' + (img ? img.alt : ''))
+        .normalize('NFC').toLowerCase().replace(/\s+/g, ' ');
+      var it = { el: wrap, text: text, textNs: text.replace(/\s/g, '') };
+      sec.items.push(it); items.push(it);
+    });
+    cell.innerHTML = '';
+    cell.appendChild(grid);
+    sections.push(sec);
+  });
+
+  var total = items.length;
+
+  function pad(n, ref) { var s = String(n); return ref && ref.length === 2 && s.length < 2 ? '0' + s : s; }
+
+  // 3) 검색
+  function apply(q) {
+    var terms = q.normalize('NFC').toLowerCase().trim().split(/\s+/).filter(Boolean);
+    var shown = 0;
+    sections.forEach(function (sec) {
+      var n = 0;
+      sec.items.forEach(function (it) {
+        var ok = terms.every(function (t) { return it.text.indexOf(t) > -1 || it.textNs.indexOf(t) > -1; });
+        it.el.classList.toggle('bt-hide', !ok);
+        if (ok) n++;
+      });
+      var off = terms.length && n === 0;
+      sec.hdrRow.classList.toggle('bt-hide', off);
+      sec.bodyRow.classList.toggle('bt-hide', off);
+      if (sec.countB) sec.countB.textContent = terms.length ? pad(n, sec.total) : sec.total;
+      if (chips[sec.id]) chips[sec.id].classList.toggle('bt-chip-off', off);
+      shown += n;
+    });
+    clearBtn.style.display = q ? 'block' : 'none';
+    empty.style.display = terms.length && !shown ? 'block' : 'none';
+    countEl.innerHTML = terms.length ? '<b>' + shown + '</b> / ' + total : '<b>' + total + '</b> videos';
+    try {
+      var url = new URL(location.href);
+      if (q.trim()) url.searchParams.set('q', q.trim()); else url.searchParams.delete('q');
+      history.replaceState(null, '', url);
+    } catch (e) {}
+  }
+
+  var raf = 0;
+  input.addEventListener('input', function () {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(function () {
+      apply(input.value);
+      // 아래쪽에서 검색하면 결과 맨 앞이 보이게 검색바 위치로
+      var barTop = head.getBoundingClientRect().bottom + window.pageYOffset;
+      if (window.pageYOffset > barTop) window.scrollTo(0, barTop);
+    });
+  });
+  clearBtn.addEventListener('click', function () { input.value = ''; apply(''); input.focus(); });
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { input.value = ''; apply(''); }
+    if (e.key === 'Enter') input.blur();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === '/' && document.activeElement !== input && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) {
+      e.preventDefault(); input.focus();
+    }
+  });
+
+  var q0 = '';
+  try { q0 = new URL(location.href).searchParams.get('q') || ''; } catch (e) {}
+  input.value = q0;
+  apply(q0);
+
+  // 4) 맨 위로 버튼
+  var topBtn = document.querySelector('.bt-top');
+  function onScroll() { topBtn.classList.toggle('show', window.pageYOffset > 600); }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  topBtn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+  });
+})();
+</script>
+<!-- ===== /검색 + 맨 위로 버튼 ===== -->
+'''
+
 # ===== index.html (GitHub Pages용) =====
 from datetime import datetime
 build_time = datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -232,6 +452,8 @@ index_html = f'''<!DOCTYPE html>
 </div>
 
 <div class="build-info">Last Updated · {build_time}</div>
+
+{ENHANCE_HTML}
 
 </body>
 </html>
