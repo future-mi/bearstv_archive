@@ -137,7 +137,7 @@ paste_content = f'''
     <td style="background:#0A1330; padding:32px 24px 28px; text-align:center;">
       <div style="font-family:'IBM Plex Mono',Consolas,monospace; font-size:10px; letter-spacing:0.32em; color:#B89B5E; text-transform:uppercase; margin-bottom:12px;">Doosan Bears &nbsp;·&nbsp; Season 2026</div>
       <div style="font-family:'Gowun Batang',serif; font-size:42px; font-weight:400; line-height:1; color:#F4EFE1; letter-spacing:-0.03em; margin-bottom:10px;">
-        BEARS<span style="color:#B89B5E; font-style:italic; font-weight:300; margin:0 4px;">·</span>TV
+        BEARS TV
       </div>
       <div style="height:2px; background:#C8102E; width:226px; margin:16px auto 0;"></div>
     </td>
@@ -268,13 +268,7 @@ theqoo_html = '''<!DOCTYPE html>
 <body>
 
 <div class="guide">
-  <h2>🐻 BEARS TV 2026 · ''' + str(total_cards) + '''개 (더쿠 붙여넣기용)</h2>
-  <ol>
-    <li>아래 <b>[코드 복사]</b> 클릭</li>
-    <li>더쿠 글쓰기 → 우측상단 <code>소스</code> 클릭</li>
-    <li>빈 창에 붙여넣기 (Ctrl+V)</li>
-    <li>다시 <code>소스</code> 눌러서 확인 → 등록</li>
-  </ol>
+  <h2>🐻 BEARS TV 2026 · ''' + str(total_cards) + '''개 </h2>
   <button class="copy-btn" id="copyBtn">📋 코드 복사</button>
   <span class="copy-status" id="copyStatus"></span>
   <div class="stats">
